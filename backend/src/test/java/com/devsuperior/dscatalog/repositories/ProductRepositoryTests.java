@@ -23,6 +23,7 @@ public class ProductRepositoryTests {
 	private long nonExistingId;
 	private long countTotalProducts;
 	
+	
 	private 
 	
 	@BeforeEach
@@ -60,5 +61,21 @@ public class ProductRepositoryTests {
 		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
 			repository.deleteById(nonExistingId);
 		});
+	}
+	
+	@Test
+	public void findByIdShouldReturnNonEmptyOptionalWhenIdExists() {
+		
+		Optional<Product> result = repository.findById(existingId);
+		
+		Assertions.assertTrue(result.isPresent());
+	}
+	
+	@Test
+	public void findByIdShouldReturnEmptyOptionalWhenIdDoesNotExist() {
+		
+		Optional<Product> result = repository.findById(nonExistingId);
+		
+		Assertions.assertTrue(result.isEmpty());
 	}
 }
