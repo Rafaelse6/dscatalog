@@ -6,6 +6,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,9 +66,31 @@ public class ProductResourceTests {
 		when(service.update(eq(existingId), any())).thenReturn(productDto);
 		when(service.update(eq(nonExistingId), any())).thenThrow(ResourceNotFoundException.class);
 	
+		when(service.insert(any())).thenReturn(productDto);
+		
 		doNothing().when(service).delete(existingId);
 		doThrow(ResourceNotFoundException.class).when(service).delete(nonExistingId);
 		doThrow(DatabaseException.class).when(service).delete(dependentId);
+	}
+	
+	
+	@Test
+	public void insertShouldReturnCreatedAndProductDTO() throws Exception {
+		
+		String jsonBody = objectMapper.writeValueAsString(productDto);
+		
+		ResultActions result = 
+				mockMvc.perform(post("/products")
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		
+		result.andExpect(status().isCreated());
+		result.andExpect(jsonPath("$.id").exists());
+		result.andExpect(jsonPath("$.name").exists());
+		result.andExpect(jsonPath("$.description").exists());
+		
 	}
 	
 	@Test
@@ -75,7 +99,7 @@ public class ProductResourceTests {
 		String jsonBody = objectMapper.writeValueAsString(productDto);
 		
 		ResultActions result = 
-				mockMvc.perform(get("/products/{id}", existingId)
+				mockMvc.perform(put("/products/{id}", existingId)
 					.content(jsonBody)
 					.contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON));
@@ -93,7 +117,7 @@ public class ProductResourceTests {
 		String jsonBody = objectMapper.writeValueAsString(productDto);
 		
 		ResultActions result = 
-				mockMvc.perform(get("/products/{id}", nonExistingId)
+				mockMvc.perform(put("/products/{id}", nonExistingId)
 					.content(jsonBody)
 					.contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON));
