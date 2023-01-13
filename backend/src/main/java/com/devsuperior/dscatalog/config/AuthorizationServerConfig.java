@@ -22,7 +22,7 @@ import com.devsuperior.dscatalog.components.JwtTokenEnhancer;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 	
-	@Value("${security.oauth2.client.client-id}")
+	@Value("${security.oauth2.client.client-secret}")
 	private String clientId;
 	
 	@Value("${security.oauth2.client.client-secret}")
